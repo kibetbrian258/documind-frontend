@@ -1,0 +1,116 @@
+<section class="page">
+  <header class="page-head">
+    <div>
+      <h1 class="page-title">Users</h1>
+      @if (store.status() === 'loaded') {
+        <p class="page-sub">
+          {{ count(store.users().length) }} accounts · limits reset at midnight
+        </p>
+      }
+    </div>
+    <label class="search">
+      <mat-icon aria-hidden="true">search</mat-icon>
+      <span class="dm-visually-hidden">Search users</span>
+      <input
+        type="search"
+        placeholder="Search by name or email"
+        [value]="query()"
+        (input)="query.set($any($event.target).value)"
+      />
+    </label>
+  </header>
+
+  @switch (store.status()) {
+    @case ('error') {
+      <div class="card state">
+        <p>The users couldn't be loaded.</p>
+        <button type="button" class="dm-btn dm-btn--secondary dm-btn--sm" (click)="store.load()">
+          Try again
+        </button>
+      </div>
+    }
+    @case ('loaded') {
+      <section class="card">
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">User</th>
+                <th scope="col">Role</th>
+                <th scope="col" class="num">Documents</th>
+                <th scope="col">Joined</th>
+                <th scope="col">Questions today</th>
+                <th scope="col">Daily limit</th>
+                <th scope="col"><span class="dm-visually-hidden">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (user of visible(); track user.id) {
+                <tr>
+                  <td>
+                    <span class="person">
+                      <span class="avatar" aria-hidden="true">{{
+                        initials(user.fullName || user.email)
+                      }}</span>
+                      <span class="who">
+                        @if (user.fullName) {
+                          <span class="name">{{ user.fullName }}</span>
+                        }
+                        <span class="email">{{ user.email }}</span>
+                      </span>
+                    </span>
+                  </td>
+                  <td>
+                    @if (user.role === 'ADMIN') {
+                      <span class="tag tag--admin">Admin</span>
+                    } @else {
+                      <span class="dm-muted">User</span>
+                    }
+                  </td>
+                  <td class="num">{{ count(user.documents) }}</td>
+                  <td class="dm-muted nowrap">{{ shortDay(user.createdAt) }}</td>
+                  <td>
+                    <span class="today">
+                      <span class="dm-mono">{{ user.questionsToday }} / {{ user.dailyLimit }}</span>
+                      <span
+                        class="today-bar"
+                        [class.today-bar--full]="user.questionsToday >= user.dailyLimit"
+                      >
+                        <span [style.width.%]="usedPercent(user)"></span>
+                      </span>
+                    </span>
+                  </td>
+                  <td>
+                    @if (user.dailyLimit === 0) {
+                      <span class="tag tag--off">Paused</span>
+                    } @else if (user.questionsToday >= user.dailyLimit) {
+                      <span class="tag tag--warn">Limit reached</span>
+                    } @else {
+                      <span class="tag">{{ user.dailyLimit }} / day</span>
+                    }
+                  </td>
+                  <td class="actions">
+                    <button
+                      type="button"
+                      class="dm-btn dm-btn--secondary dm-btn--sm edit"
+                      (click)="editLimit(user)"
+                    >
+                      Edit limit
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="7" class="state">No users match “{{ query() }}”.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    }
+    @default {
+      <p class="card state" role="status">Loading users…</p>
+    }
+  }
+</section>

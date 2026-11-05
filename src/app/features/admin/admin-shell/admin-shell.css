@@ -1,0 +1,161 @@
+.admin {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  height: 100dvh;
+}
+
+/* ------------------------------------------------------------ dark sidebar */
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 22px 14px 16px;
+  background: var(--dm-navy);
+  color: #ffffff;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.badge {
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: var(--dm-yellow);
+  color: var(--dm-navy);
+  font: 700 10px/1 var(--dm-font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.nav {
+  display: grid;
+  gap: 4px;
+}
+
+.nav a,
+.back {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  border-radius: var(--dm-radius-sm);
+  color: rgb(255 255 255 / 78%);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.nav a:hover,
+.back:hover {
+  background: rgb(255 255 255 / 6%);
+  color: #ffffff;
+}
+
+.nav a.active {
+  background: rgb(255 255 255 / 11%);
+  color: #ffffff;
+}
+
+.nav mat-icon,
+.back mat-icon {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+}
+
+.back {
+  margin-top: auto;
+}
+
+.me {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 8px 0;
+  border-top: 1px solid rgb(255 255 255 / 12%);
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--dm-yellow);
+  color: var(--dm-navy);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.me-text {
+  display: grid;
+  min-width: 0;
+}
+
+.me-name {
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.me-role {
+  color: rgb(255 255 255 / 60%);
+  font-size: 12px;
+}
+
+/* ------------------------------------------------------------ page area */
+
+.main {
+  min-width: 0;
+  overflow-y: auto;
+  background: var(--dm-bg);
+}
+
+/* ------------------------------------------------------------ phones: a bar across the top */
+
+@media (max-width: 900px) {
+  .admin {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .sidebar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    padding: 12px 12px 8px;
+  }
+
+  .nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    display: flex;
+    overflow-x: auto;
+  }
+
+  .nav a {
+    flex-shrink: 0;
+  }
+
+  .back {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    padding: 6px 4px;
+    white-space: nowrap;
+  }
+
+  .me {
+    display: none;
+  }
+}

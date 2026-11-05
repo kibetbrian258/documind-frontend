@@ -1,0 +1,229 @@
+<section class="library">
+  <header class="head">
+    <div>
+      <h1 class="title">Library</h1>
+      <p class="dm-muted">
+        {{ store.count() }} of {{ maxDocuments }} documents · only you can see these
+      </p>
+    </div>
+
+    <label class="search">
+      <mat-icon aria-hidden="true">search</mat-icon>
+      <span class="dm-visually-hidden">Search documents</span>
+      <input
+        type="search"
+        placeholder="Search documents"
+        [value]="query()"
+        (input)="query.set($any($event.target).value)"
+      />
+    </label>
+  </header>
+
+  <!-- Drop zone: drag files here, or use the button -->
+  <div
+    class="dropzone"
+    [class.dragging]="dragging()"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)"
+  >
+    <span class="drop-icon" aria-hidden="true"><mat-icon>upload</mat-icon></span>
+    <div class="drop-text">
+      <p class="drop-title">Drop files here to add them</p>
+      <p class="dm-muted">
+        PDF, DOCX or TXT · up to 20 MB each. You can start asking while they're being read.
+      </p>
+    </div>
+    <button type="button" class="dm-btn dm-btn--secondary" (click)="fileInput.click()">
+      Choose files
+    </button>
+    <input
+      #fileInput
+      type="file"
+      class="dm-visually-hidden"
+      tabindex="-1"
+      aria-hidden="true"
+      multiple
+      accept=".pdf,.docx,.txt"
+      (change)="onFilesChosen($event)"
+    />
+  </div>
+
+  <!-- "wasn't added" banners; screen readers announce new ones -->
+  <div class="notices" aria-live="polite">
+    @for (notice of store.notices(); track notice.key) {
+      <div class="dm-alert dm-alert--error notice">
+        <mat-icon aria-hidden="true">error</mat-icon>
+        <span class="notice-text"
+          ><strong>{{ notice.fileName }}</strong> {{ notice.message }}</span
+        >
+        <button
+          type="button"
+          class="dm-icon-btn notice-close"
+          aria-label="Dismiss"
+          (click)="store.dismissNotice(notice.key)"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    }
+  </div>
+
+  @switch (store.status()) {
+    @case ('loading') {
+      <p class="state dm-muted" role="status">Loading your documents…</p>
+    }
+    @case ('error') {
+      <div class="state">
+        <p>Your documents couldn't be loaded.</p>
+        <button type="button" class="dm-btn dm-btn--secondary dm-btn--sm" (click)="store.load()">
+          Try again
+        </button>
+      </div>
+    }
+    @default {
+      @if (store.count() === 0 && store.uploads().length === 0) {
+        <div class="state empty">
+          <mat-icon aria-hidden="true">menu_book</mat-icon>
+          <p class="empty-title">No documents yet</p>
+          <p class="dm-muted">
+            Add lecture notes, a contract or a manual above, then ask questions about it in Chats.
+          </p>
+        </div>
+      } @else {
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col" class="col-pages">Pages</th>
+                <th scope="col" class="col-size">Size</th>
+                <th scope="col" class="col-added">Added</th>
+                <th scope="col">Status</th>
+                <th scope="col" class="col-actions">
+                  <span class="dm-visually-hidden">Actions</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Files still uploading -->
+              @for (upload of store.uploads(); track upload.key) {
+                <tr>
+                  <td>
+                    <span class="name">
+                      <span class="kind" [attr.data-kind]="upload.kind">{{ upload.kind }}</span>
+                      <span class="file-name">{{ upload.fileName }}</span>
+                    </span>
+                  </td>
+                  <td class="col-pages dm-mono">—</td>
+                  <td class="col-size dm-mono">{{ formatSize(upload.sizeBytes) }}</td>
+                  <td class="col-added">Just now</td>
+                  <td>
+                    <div class="progress-row">
+                      <div
+                        class="progress"
+                        role="progressbar"
+                        [attr.aria-label]="'Uploading ' + upload.fileName"
+                        [attr.aria-valuenow]="upload.progress"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                      >
+                        <span [style.width.%]="upload.progress"></span>
+                      </div>
+                      <span class="dm-mono progress-value">{{ upload.progress }}%</span>
+                    </div>
+                    <p class="status-note">
+                      {{ upload.progress < 100 ? 'Uploading…' : 'Saving…' }}
+                    </p>
+                  </td>
+                  <td class="col-actions"></td>
+                </tr>
+              }
+
+              <!-- Uploaded documents -->
+              @for (doc of visibleDocuments(); track doc.id) {
+                <tr>
+                  <td>
+                    <span class="name">
+                      <span class="kind" [attr.data-kind]="kindOf(doc)">{{ kindOf(doc) }}</span>
+                      <a class="file-name" [href]="fileUrl(doc)" target="_blank" rel="noopener">{{
+                        doc.fileName
+                      }}</a>
+                    </span>
+                  </td>
+                  <td class="col-pages dm-mono">{{ doc.pageCount ?? '—' }}</td>
+                  <td class="col-size dm-mono">{{ formatSize(doc.sizeBytes) }}</td>
+                  <td class="col-added">{{ formatAdded(doc.createdAt) }}</td>
+                  <td>
+                    @switch (doc.status) {
+                      @case ('READY') {
+                        <span class="dm-pill dm-pill--success"
+                          ><mat-icon aria-hidden="true">check</mat-icon>Ready</span
+                        >
+                      }
+                      @case ('PROCESSING') {
+                        <span class="dm-pill dm-pill--info"
+                          ><span class="spinner" aria-hidden="true"></span>Processing</span
+                        >
+                        <p class="status-note">Reading and indexing pages</p>
+                      }
+                      @case ('FAILED') {
+                        <span class="dm-pill dm-pill--danger"
+                          ><mat-icon aria-hidden="true">priority_high</mat-icon>Failed</span
+                        >
+                        <p class="status-note status-note--error">{{ doc.failureReason }}</p>
+                      }
+                    }
+                  </td>
+                  <td class="col-actions">
+                    <span class="actions">
+                      @if (doc.status === 'FAILED') {
+                        <button
+                          type="button"
+                          class="dm-icon-btn"
+                          matTooltip="Try again"
+                          [attr.aria-label]="'Try processing ' + doc.fileName + ' again'"
+                          [disabled]="isBusy(doc.id)"
+                          (click)="retry(doc)"
+                        >
+                          <mat-icon>refresh</mat-icon>
+                        </button>
+                      }
+                      @if (doc.status === 'READY') {
+                        <button
+                          type="button"
+                          class="dm-icon-btn"
+                          matTooltip="Ask about this document"
+                          [attr.aria-label]="'Ask about ' + doc.fileName"
+                          (click)="ask(doc)"
+                        >
+                          <mat-icon>chat_bubble</mat-icon>
+                        </button>
+                      }
+                      <button
+                        type="button"
+                        class="dm-icon-btn"
+                        matTooltip="Delete"
+                        [attr.aria-label]="'Delete ' + doc.fileName"
+                        [disabled]="isBusy(doc.id)"
+                        (click)="confirmDelete(doc)"
+                      >
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </span>
+                  </td>
+                </tr>
+              } @empty {
+                @if (query()) {
+                  <tr>
+                    <td colspan="6" class="no-match">No documents match “{{ query() }}”.</td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+  }
+</section>

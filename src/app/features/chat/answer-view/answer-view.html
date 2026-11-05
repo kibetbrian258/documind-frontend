@@ -1,0 +1,244 @@
+@let a = answer();
+
+<!-- Text with citation chips, used by paragraphs, headings and list items -->
+<ng-template #inline let-content>
+  @for (piece of content; track $index) {
+    @if (piece.type === 'text') {
+      @if (piece.bold) {
+        <strong>{{ piece.text }}</strong>
+      } @else {
+        {{ piece.text }}
+      }
+    } @else {
+      <button
+        type="button"
+        class="cite"
+        [class.cite--active]="activeSource() === piece.number"
+        [disabled]="!citation(piece.number)"
+        [attr.aria-label]="
+          'Source ' +
+          piece.number +
+          (citation(piece.number)?.page ? ', page ' + citation(piece.number)?.page : '')
+        "
+        (click)="openSource.emit(piece.number)"
+      >
+        {{ chipLabel(piece.number) }}
+      </button>
+    }
+  }
+</ng-template>
+
+<ng-template #body>
+  <div class="text">
+    @for (block of blocks(); track $index) {
+      @switch (block.type) {
+        @case ('heading') {
+          <h3>
+            <ng-container *ngTemplateOutlet="inline; context: { $implicit: block.content }" />
+          </h3>
+        }
+        @case ('list') {
+          @if (block.ordered) {
+            <ol [start]="block.start">
+              @for (item of block.items; track $index) {
+                <li><ng-container *ngTemplateOutlet="inline; context: { $implicit: item }" /></li>
+              }
+            </ol>
+          } @else {
+            <ul>
+              @for (item of block.items; track $index) {
+                <li><ng-container *ngTemplateOutlet="inline; context: { $implicit: item }" /></li>
+              }
+            </ul>
+          }
+        }
+        @default {
+          <p><ng-container *ngTemplateOutlet="inline; context: { $implicit: block.content }" /></p>
+        }
+      }
+    }
+  </div>
+</ng-template>
+
+<article class="answer" aria-label="Answer">
+  @switch (a.phase) {
+    <!-- 01: the first seconds, before any words -->
+    @case ('searching') {
+      <ng-container *ngTemplateOutlet="working" />
+    }
+    @case ('reading') {
+      <ng-container *ngTemplateOutlet="working" />
+    }
+
+    @case ('writing') {
+      <p class="status">
+        <span class="dot" aria-hidden="true"></span>
+        Writing from {{ plural(a.passagesFound ?? 0, 'passage') }}…
+      </p>
+      <ng-container *ngTemplateOutlet="body" />
+    }
+
+    @case ('done') {
+      @if (a.notFound) {
+        <!-- 02: not in your documents -->
+        <div class="not-found">
+          <span class="not-found-art" aria-hidden="true"
+            ><span></span><span></span><span></span
+          ></span>
+          <div>
+            <p class="not-found-title">I couldn't find that in your documents.</p>
+            <p class="not-found-text">{{ notFoundDetail() }}</p>
+          </div>
+        </div>
+        <div class="row-actions">
+          <a class="dm-btn dm-btn--primary dm-btn--sm" routerLink="/library">
+            <mat-icon aria-hidden="true">upload</mat-icon>
+            Upload a document
+          </a>
+          @if (canSearchAll()) {
+            <button
+              type="button"
+              class="dm-btn dm-btn--secondary dm-btn--sm"
+              (click)="searchAll.emit()"
+            >
+              Search all {{ plural(readyCount(), 'document') }}
+            </button>
+          }
+        </div>
+      } @else {
+        @if (a.citations.length > 0) {
+          <p class="status">
+            <mat-icon class="status-check" aria-hidden="true">check</mat-icon>
+            {{ basis() }}
+          </p>
+        }
+        <ng-container *ngTemplateOutlet="body" />
+
+        @if (a.citations.length > 0) {
+          <section class="sources" aria-label="Sources">
+            <h4 class="sources-title">Sources</h4>
+            <div class="source-grid">
+              @for (citation of a.citations; track citation.number) {
+                <button
+                  type="button"
+                  class="source"
+                  [class.source--active]="activeSource() === citation.number"
+                  [attr.aria-pressed]="activeSource() === citation.number"
+                  (click)="openSource.emit(citation.number)"
+                >
+                  <span class="source-meta">
+                    <span class="badge">{{ citation.number }}</span>
+                    <span class="dm-mono">
+                      @if (citation.page) {
+                        p. {{ citation.page }} ·
+                      }
+                      {{ percent(citation.similarity) }}
+                    </span>
+                  </span>
+                  <span class="source-name">{{ sourceTitle(citation.fileName) }}</span>
+                </button>
+              }
+            </div>
+          </section>
+        }
+
+        @if (a.messageId) {
+          <div class="feedback">
+            <button
+              type="button"
+              class="dm-icon-btn small"
+              [class.chosen]="a.feedback === 'UP'"
+              [attr.aria-pressed]="a.feedback === 'UP'"
+              aria-label="Good answer"
+              matTooltip="Good answer"
+              (click)="rate.emit('UP')"
+            >
+              <mat-icon>thumb_up</mat-icon>
+            </button>
+            <button
+              type="button"
+              class="dm-icon-btn small"
+              [class.chosen]="a.feedback === 'DOWN'"
+              [attr.aria-pressed]="a.feedback === 'DOWN'"
+              aria-label="Bad answer"
+              matTooltip="Bad answer"
+              (click)="rate.emit('DOWN')"
+            >
+              <mat-icon>thumb_down</mat-icon>
+            </button>
+            <button
+              type="button"
+              class="dm-icon-btn small"
+              [attr.aria-label]="copied() ? 'Copied' : 'Copy answer'"
+              [matTooltip]="copied() ? 'Copied' : 'Copy'"
+              (click)="copy()"
+            >
+              <mat-icon>{{ copied() ? 'check' : 'content_copy' }}</mat-icon>
+            </button>
+          </div>
+        }
+      }
+    }
+
+    <!-- 04: couldn't reach the AI -->
+    @case ('error') {
+      <div class="error" role="alert">
+        <mat-icon aria-hidden="true">error_outline</mat-icon>
+        <div>
+          <p class="error-title">{{ a.error?.title }}</p>
+          <p>{{ a.error?.detail }}</p>
+        </div>
+      </div>
+      @if (a.question) {
+        <div class="row-actions">
+          <button type="button" class="dm-btn dm-btn--primary dm-btn--sm" (click)="retry.emit()">
+            <mat-icon aria-hidden="true">refresh</mat-icon>
+            Try again
+          </button>
+        </div>
+      }
+    }
+
+    @case ('stopped') {
+      @if (a.text) {
+        <ng-container *ngTemplateOutlet="body" />
+      }
+      <p class="stopped">
+        <mat-icon aria-hidden="true">stop_circle</mat-icon>
+        Stopped. This answer wasn't saved and didn't use up a question.
+      </p>
+    }
+  }
+</article>
+
+<ng-template #working>
+  <ol class="steps" aria-label="Working on your answer">
+    <li
+      class="step"
+      [class.step--active]="a.phase === 'searching'"
+      [class.step--done]="a.phase !== 'searching'"
+    >
+      <span class="step-icon" aria-hidden="true">
+        @if (a.phase !== 'searching') {
+          <mat-icon>check</mat-icon>
+        }
+      </span>
+      {{ a.phase === 'searching' ? 'Searching' : 'Searched' }}
+      {{ plural(a.documentsSearched ?? 0, 'document') }}
+    </li>
+    <li class="step" [class.step--active]="a.phase === 'reading'">
+      <span class="step-icon" aria-hidden="true"></span>
+      @if (a.passagesFound) {
+        Reading the
+        {{ a.passagesFound === 1 ? 'closest passage' : a.passagesFound + ' closest passages' }}
+      } @else {
+        Reading the closest passages
+      }
+    </li>
+    <li class="step">
+      <span class="step-icon" aria-hidden="true"></span>
+      Writing the answer
+    </li>
+  </ol>
+  <div class="skeleton" aria-hidden="true"><span></span><span></span><span></span></div>
+</ng-template>

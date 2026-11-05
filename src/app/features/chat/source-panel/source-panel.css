@@ -1,0 +1,261 @@
+/* Wide screens: a column on the right of the chat. */
+:host {
+  display: block;
+  min-height: 0;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-left: 1px solid var(--dm-border);
+  background: var(--dm-surface-muted);
+}
+
+/* ".panel" makes these win over the element's own display rule (e.g. .badge). */
+.scrim,
+.grabber,
+.panel .narrow-only {
+  display: none;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 12px 12px 18px;
+  border-bottom: 1px solid var(--dm-border);
+  background: var(--dm-surface);
+}
+
+.doc-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+  color: var(--dm-text-muted);
+  font-size: 20px;
+}
+
+.head-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.file {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta {
+  color: var(--dm-text-muted);
+  font-size: 12px;
+}
+
+.badge {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  border-radius: 5px;
+  background: var(--dm-yellow);
+  color: var(--dm-navy);
+  font: 600 12px/1 var(--dm-font-mono);
+}
+
+.body {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  flex: 1;
+  min-height: 0;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* ------------------------------------------------------------ the stylised page */
+
+.page {
+  display: grid;
+  gap: 14px;
+  padding: 22px 24px 28px;
+  border-radius: 6px;
+  background: var(--dm-surface);
+  box-shadow: var(--dm-shadow);
+}
+
+.page-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--dm-text-subtle);
+  font-size: 10px;
+}
+
+.running-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lines {
+  display: grid;
+  gap: 8px;
+}
+
+.lines span {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--dm-surface-muted);
+}
+
+.lines span:nth-child(2) {
+  width: 88%;
+}
+
+.lines span:nth-child(3) {
+  width: 62%;
+}
+
+.passage {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 14px;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+
+.passage mark {
+  padding: 2px 0;
+  background: var(--dm-yellow);
+  color: var(--dm-navy);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* ------------------------------------------------------------ below the page */
+
+.note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--dm-text-muted);
+  font-size: 13px;
+}
+
+.match {
+  flex-shrink: 0;
+  padding: 3px 8px;
+  border: 1px solid var(--dm-border);
+  border-radius: 999px;
+  background: var(--dm-surface);
+  color: var(--dm-text);
+  font-size: 11px;
+}
+
+.open {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-self: start;
+  color: var(--dm-link);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.open:hover {
+  text-decoration: underline;
+}
+
+.open mat-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+.gone {
+  color: var(--dm-text-muted);
+  font-size: 13px;
+}
+
+/* ------------------------------------------------------------ phones: bottom sheet */
+
+@media (max-width: 900px) {
+  :host {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+  }
+
+  .scrim {
+    display: block;
+    position: absolute;
+    inset: 0;
+    background: rgb(28 30 62 / 35%);
+  }
+
+  .panel {
+    position: absolute;
+    inset: auto 0 0 0;
+    height: auto;
+    max-height: 78dvh;
+    border: 0;
+    border-radius: 20px 20px 0 0;
+    background: var(--dm-bg);
+    box-shadow: 0 -8px 30px rgb(28 30 62 / 18%);
+    animation: rise 200ms ease-out;
+  }
+
+  .grabber {
+    display: block;
+    width: 40px;
+    height: 4px;
+    margin: 10px auto 0;
+    border-radius: 2px;
+    background: var(--dm-border-strong);
+  }
+
+  .head {
+    padding: 10px 12px 10px 16px;
+    border: 0;
+    background: transparent;
+  }
+
+  .panel .wide-only {
+    display: none;
+  }
+
+  .panel .narrow-only {
+    display: block;
+  }
+
+  .panel .badge.narrow-only {
+    display: grid;
+  }
+
+  .body {
+    padding: 4px 16px 12px;
+  }
+
+  .page {
+    padding: 18px 16px 22px;
+  }
+
+  .panel .foot.narrow-only {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 12px 16px calc(16px + env(safe-area-inset-bottom));
+  }
+
+  @keyframes rise {
+    from {
+      transform: translateY(100%);
+    }
+  }
+}

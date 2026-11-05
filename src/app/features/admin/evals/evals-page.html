@@ -1,0 +1,238 @@
+<section class="page">
+  <header class="page-head">
+    <div>
+      <h1 class="page-title">Evals</h1>
+      @if (run()) {
+        <p class="page-sub">{{ subtitle() }}</p>
+      }
+    </div>
+    <button
+      type="button"
+      class="dm-btn dm-btn--primary run-btn"
+      [disabled]="starting() || anyRunning()"
+      (click)="start()"
+    >
+      <mat-icon aria-hidden="true">play_arrow</mat-icon>
+      {{ anyRunning() ? 'Running…' : 'Run eval suite' }}
+    </button>
+  </header>
+
+  @if (startError()) {
+    <div class="dm-alert dm-alert--error" role="alert">
+      <mat-icon aria-hidden="true">error</mat-icon>
+      <span>{{ startError() }}</span>
+    </div>
+  }
+
+  @switch (loadState()) {
+    @case ('loading') {
+      <p class="card state" role="status">Loading eval runs…</p>
+    }
+    @case ('error') {
+      <div class="card state">
+        <p>The eval runs couldn't be loaded.</p>
+        <button type="button" class="dm-btn dm-btn--secondary dm-btn--sm" (click)="load()">
+          Try again
+        </button>
+      </div>
+    }
+    @default {
+      @if (run(); as r) {
+        <!-- ======================================================== running -->
+        @if (r.status === 'RUNNING') {
+          <div class="card progress-card" role="status">
+            <div class="progress-text">
+              <span
+                >Answering question
+                {{ r.completedCases + 1 > r.totalCases ? r.totalCases : r.completedCases + 1 }} of
+                {{ r.totalCases }}…</span
+              >
+              <span class="dm-mono">{{ r.completedCases }} / {{ r.totalCases }}</span>
+            </div>
+            <span class="meter"
+              ><span
+                [style.width.%]="r.totalCases ? (100 * r.completedCases) / r.totalCases : 0"
+              ></span
+            ></span>
+            <p class="dm-muted small">
+              Each question goes through the same search and AI model your users get. Results appear
+              below as they come in.
+            </p>
+          </div>
+        }
+
+        @if (r.status === 'FAILED' && r.error) {
+          <div class="dm-alert dm-alert--error" role="alert">
+            <mat-icon aria-hidden="true">error</mat-icon>
+            <span>{{ r.error }}</span>
+          </div>
+        }
+
+        <!-- ======================================================== score cards -->
+        @if (metrics().length > 0) {
+          <div class="kpis">
+            @for (m of metrics(); track m.label) {
+              <div class="kpi metric">
+                <div class="metric-head">
+                  <span class="kpi-label">{{ m.label }}</span>
+                  @if (m.pass === true) {
+                    <span class="verdict verdict--pass"
+                      ><mat-icon aria-hidden="true">check</mat-icon>Pass</span
+                    >
+                  } @else if (m.pass === false) {
+                    <span class="verdict verdict--fail"
+                      ><mat-icon aria-hidden="true">close</mat-icon>Below target</span
+                    >
+                  }
+                </div>
+                <div class="metric-value">
+                  <span class="kpi-value">{{ m.value }}</span>
+                  <span class="metric-detail">{{ m.detail }}</span>
+                </div>
+                <span class="metric-bar" [class.metric-bar--fail]="m.pass === false">
+                  <span [style.width.%]="m.percent ?? 0"></span>
+                  @if (m.target !== null) {
+                    <i class="target" [style.left.%]="m.target" aria-hidden="true"></i>
+                  }
+                </span>
+                <span class="kpi-note">{{ m.targetText }}</span>
+              </div>
+            }
+          </div>
+        }
+
+        <div class="lower">
+          <!-- ====================================================== results by question -->
+          <section class="card" aria-labelledby="results-title">
+            <div class="card-head">
+              <h2 class="card-title" id="results-title">Results by question</h2>
+              <div class="segmented" role="group" aria-label="Show">
+                <button
+                  type="button"
+                  [attr.aria-pressed]="filter() === 'all'"
+                  (click)="filter.set('all')"
+                >
+                  All {{ r.results.length }}
+                </button>
+                <button
+                  type="button"
+                  [attr.aria-pressed]="filter() === 'failed'"
+                  (click)="filter.set('failed')"
+                >
+                  Failed {{ failedCount() }}
+                </button>
+              </div>
+            </div>
+
+            @if (results().length === 0) {
+              <p class="state">
+                {{
+                  filter() === 'failed' && r.results.length > 0
+                    ? 'No failed questions in this run.'
+                    : 'No results yet.'
+                }}
+              </p>
+            } @else {
+              <div class="table-wrap">
+                <table class="table results">
+                  <thead>
+                    <tr>
+                      <th scope="col">Question</th>
+                      <th scope="col">Expected</th>
+                      <th scope="col">Got</th>
+                      <th scope="col">{{ filter() === 'failed' ? 'Why it failed' : 'Result' }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (result of results(); track result.id) {
+                      <tr>
+                        <td>
+                          <span class="question">
+                            <span class="qid dm-mono">{{ result.id }}</span>
+                            <span>{{ result.question }}</span>
+                          </span>
+                        </td>
+                        <td class="mono">{{ expected(result) }}</td>
+                        <td class="mono" [class.wrong]="result.status === 'FAILED'">
+                          {{ got(result) }}
+                        </td>
+                        <td class="why">
+                          @switch (result.status) {
+                            @case ('PASSED') {
+                              <span class="passed"
+                                ><mat-icon aria-hidden="true">check</mat-icon>Passed</span
+                              >
+                            }
+                            @case ('SKIPPED') {
+                              <span class="dm-muted">Skipped: {{ result.reason }}</span>
+                            }
+                            @default {
+                              {{ result.reason }}
+                            }
+                          }
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </section>
+
+          <!-- ====================================================== run history -->
+          <section class="card history" aria-labelledby="history-title">
+            <div class="card-head">
+              <h2 class="card-title" id="history-title">Run history</h2>
+            </div>
+            <ul class="history-list">
+              @for (item of runs(); track item.id; let first = $first) {
+                <li>
+                  <button
+                    type="button"
+                    class="history-item"
+                    [class.selected]="item.id === r.id"
+                    [attr.aria-pressed]="item.id === r.id"
+                    (click)="select(item)"
+                  >
+                    <span class="history-line">
+                      <span
+                        ><span class="dm-mono dm-muted">#{{ runNumber(item) }}</span> Run</span
+                      >
+                      <span class="dm-mono">
+                        {{
+                          item.status === 'RUNNING'
+                            ? 'running'
+                            : item.status === 'FAILED'
+                              ? 'failed'
+                              : percent(historyPercent(item))
+                        }}
+                      </span>
+                    </span>
+                    <span class="history-bar" [class.history-bar--latest]="first">
+                      <span [style.width.%]="historyPercent(item) ?? 0"></span>
+                    </span>
+                    <span class="history-date">{{ shortDay(item.startedAt) }}</span>
+                  </button>
+                </li>
+              }
+            </ul>
+            <p class="history-note">
+              Bars show answer correctness. Yellow marks the latest run. Runs are kept until the
+              server restarts.
+            </p>
+          </section>
+        </div>
+      } @else {
+        <!-- ======================================================== no runs yet -->
+        <div class="card state empty">
+          <mat-icon aria-hidden="true">fact_check</mat-icon>
+          <p class="empty-title">No eval runs yet</p>
+          <p>
+            The suite asks every question in <span class="dm-mono">evals/eval-cases.json</span>,
+            using the documents in your account, and scores each answer and citation.
+          </p>
+        </div>
+      }
+    }
+  }
+</section>

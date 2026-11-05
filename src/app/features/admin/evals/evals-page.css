@@ -1,0 +1,275 @@
+.run-btn mat-icon {
+  color: var(--dm-yellow);
+}
+
+.small {
+  font-size: 12px;
+}
+
+/* ------------------------------------------------------------ running */
+
+.progress-card {
+  display: grid;
+  gap: 10px;
+  padding: 16px 18px;
+}
+
+.progress-text {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.meter {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--dm-surface-muted);
+  overflow: hidden;
+}
+
+.meter span {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--dm-navy);
+  transition: width 300ms ease;
+}
+
+/* ------------------------------------------------------------ score cards */
+
+.metric {
+  gap: 10px;
+}
+
+.metric-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.verdict {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.verdict mat-icon {
+  width: 14px;
+  height: 14px;
+  font-size: 14px;
+}
+
+.verdict--pass {
+  background: var(--dm-success-bg);
+  color: var(--dm-success);
+}
+
+.verdict--fail {
+  background: var(--dm-danger-bg);
+  color: var(--dm-danger-text);
+}
+
+.metric-value {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.metric-detail {
+  color: var(--dm-text-muted);
+  font-size: 13px;
+}
+
+.metric-bar {
+  position: relative;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--dm-surface-muted);
+}
+
+.metric-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--dm-navy);
+}
+
+.metric-bar--fail > span {
+  background: var(--dm-danger);
+}
+
+/* The target line on the bar */
+.target {
+  position: absolute;
+  top: -4px;
+  width: 2px;
+  height: 14px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--dm-navy);
+}
+
+/* ------------------------------------------------------------ results + history */
+
+.lower {
+  display: grid;
+  grid-template-columns: minmax(0, 1.9fr) minmax(260px, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.results th,
+.results td {
+  padding-right: 12px;
+  padding-left: 12px;
+}
+
+.results th:first-child,
+.results td:first-child {
+  padding-left: 18px;
+}
+
+.results td {
+  vertical-align: top;
+}
+
+.question {
+  display: flex;
+  gap: 8px;
+  min-width: 170px;
+  font-weight: 500;
+}
+
+.qid {
+  flex-shrink: 0;
+  padding-top: 2px;
+  color: var(--dm-text-subtle);
+  font-size: 11px;
+}
+
+.mono {
+  font-family: var(--dm-font-mono);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.wrong {
+  color: var(--dm-danger-text);
+}
+
+.why {
+  min-width: 150px;
+  color: var(--dm-text-muted);
+}
+
+.passed {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--dm-success);
+  font-weight: 600;
+}
+
+.passed mat-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+.history-list {
+  margin: 0;
+  padding: 0 10px;
+  list-style: none;
+}
+
+.history-item {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 8px;
+  border: 0;
+  border-top: 1px solid var(--dm-border);
+  border-radius: 0;
+  background: transparent;
+  color: var(--dm-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.history-item:hover,
+.history-item.selected {
+  background: var(--dm-bg);
+}
+
+.history-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.history-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--dm-surface-muted);
+}
+
+.history-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--dm-navy);
+}
+
+.history-bar--latest span {
+  background: var(--dm-yellow);
+  box-shadow: inset 0 0 0 1px #e6bd25;
+}
+
+.history-date {
+  color: var(--dm-text-muted);
+  font-size: 12px;
+  text-align: right;
+}
+
+.history-note {
+  padding: 12px 18px 16px;
+  color: var(--dm-text-muted);
+  font-size: 12px;
+}
+
+/* ------------------------------------------------------------ no runs yet */
+
+.empty mat-icon {
+  width: 36px;
+  height: 36px;
+  color: var(--dm-text-subtle);
+  font-size: 36px;
+}
+
+.empty-title {
+  color: var(--dm-text);
+  font-family: var(--dm-font-display);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.empty p:last-child {
+  max-width: 460px;
+}
+
+@media (max-width: 1100px) {
+  .lower {
+    grid-template-columns: 1fr;
+  }
+}

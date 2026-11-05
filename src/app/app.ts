@@ -1,12 +1,13 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
+/**
+ * Root component: just a place for the router to show the current page.
+ * The toolbar and navigation live in layout/shell.
+ */
 @Component({
-  imports: [RouterOutlet],
   selector: 'app-root',
-  styleUrl: './app.css',
-  templateUrl: './app.html',
+  imports: [RouterOutlet],
+  template: `<router-outlet />`,
 })
-export class App {
-  protected readonly title = signal('documindFrontend');
-}
+export class App {}

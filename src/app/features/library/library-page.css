@@ -1,0 +1,388 @@
+.library {
+  display: grid;
+  gap: 24px;
+  max-width: 1180px;
+  padding: 40px 40px 56px;
+}
+
+/* ------------------------------------------------------------ header */
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  margin-bottom: 6px;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: min(260px, 100%);
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--dm-border-strong);
+  border-radius: var(--dm-radius);
+  background: var(--dm-surface);
+  color: var(--dm-text-subtle);
+}
+
+.search:focus-within {
+  border-color: var(--dm-navy);
+}
+
+.search mat-icon {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+}
+
+.search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--dm-text);
+  font: inherit;
+}
+
+/* ------------------------------------------------------------ drop zone */
+
+.dropzone {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 26px 26px;
+  border: 2px dashed var(--dm-border-strong);
+  border-radius: var(--dm-radius-lg);
+  background: var(--dm-bg);
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease;
+}
+
+.dropzone.dragging {
+  border-color: var(--dm-navy);
+  background: var(--dm-yellow-soft);
+}
+
+.drop-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 58px;
+  height: 58px;
+  border-radius: 12px;
+  background: var(--dm-yellow);
+  color: var(--dm-navy);
+}
+
+.drop-text {
+  flex: 1;
+}
+
+.drop-title {
+  font-family: var(--dm-font-display);
+  font-size: 19px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+/* ------------------------------------------------------------ banners */
+
+.notices {
+  display: grid;
+  gap: 8px;
+}
+
+.notices:empty {
+  display: none;
+}
+
+.notice {
+  align-items: center;
+}
+
+.notice-text {
+  flex: 1;
+}
+
+.notice-close {
+  width: 30px;
+  height: 30px;
+  color: var(--dm-danger-text);
+}
+
+/* ------------------------------------------------------------ table */
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--dm-border);
+  border-radius: var(--dm-radius-lg);
+  background: var(--dm-surface);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--dm-border);
+  background: var(--dm-bg);
+  color: var(--dm-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+td {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--dm-border);
+  vertical-align: middle;
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.name {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.file-name {
+  color: var(--dm-text);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+a.file-name:hover {
+  text-decoration: underline;
+}
+
+/* File type badge: PDF navy, DOCX light blue, TXT grey */
+.kind {
+  flex-shrink: 0;
+  min-width: 42px;
+  padding: 5px 0;
+  border-radius: 5px;
+  background: var(--dm-navy);
+  color: #ffffff;
+  font: 600 11px/1 var(--dm-font-mono);
+  text-align: center;
+}
+
+.kind[data-kind='DOCX'] {
+  background: var(--dm-info-bg);
+  color: var(--dm-info);
+}
+
+.kind[data-kind='TXT'] {
+  background: var(--dm-surface-muted);
+  color: var(--dm-text-muted);
+}
+
+.col-pages,
+.col-size {
+  color: var(--dm-text-muted);
+  white-space: nowrap;
+}
+
+.col-added {
+  color: var(--dm-text-muted);
+  white-space: nowrap;
+}
+
+.col-actions {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.actions {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.status-note {
+  margin-top: 6px;
+  color: var(--dm-text-muted);
+  font-size: 13px;
+}
+
+.status-note--error {
+  max-width: 280px;
+  color: var(--dm-danger-text);
+}
+
+.dm-pill mat-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+/* Spinning ring inside the "Processing" pill */
+.spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 900ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Upload progress */
+.progress-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 280px;
+}
+
+.progress {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--dm-surface-muted);
+  overflow: hidden;
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  background: var(--dm-navy);
+  transition: width 150ms linear;
+}
+
+.progress-value {
+  font-size: 12px;
+}
+
+.no-match {
+  color: var(--dm-text-muted);
+  text-align: center;
+}
+
+/* ------------------------------------------------------------ loading / error / empty */
+
+.state {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 48px 16px;
+  text-align: center;
+}
+
+.empty mat-icon {
+  width: 40px;
+  height: 40px;
+  color: var(--dm-text-subtle);
+  font-size: 40px;
+}
+
+.empty-title {
+  font-family: var(--dm-font-display);
+  font-size: 19px;
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------ narrow screens */
+
+@media (max-width: 900px) {
+  .library {
+    padding: 24px 16px 40px;
+  }
+
+  .head {
+    flex-direction: column;
+  }
+
+  .search {
+    width: 100%;
+  }
+
+  .dropzone {
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 20px;
+  }
+
+  .drop-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .drop-text {
+    flex: 1 1 calc(100% - 64px);
+  }
+
+  .dropzone .dm-btn {
+    width: 100%;
+  }
+
+  /* Each document becomes a small card: name on top, status and buttons below. */
+  table,
+  tbody,
+  tr,
+  td {
+    display: block;
+  }
+
+  thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  tbody tr {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 10px 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--dm-border);
+  }
+
+  tbody tr:last-child {
+    border-bottom: 0;
+  }
+
+  td {
+    padding: 0;
+    border: 0;
+  }
+
+  td:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .col-pages,
+  .col-size,
+  .col-added {
+    display: none;
+  }
+
+  .col-actions {
+    width: auto;
+  }
+}

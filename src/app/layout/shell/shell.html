@@ -1,0 +1,158 @@
+<div class="layout" [class.nav-open]="navOpen()">
+  <!-- Phones only: top bar with the menu button -->
+  <header class="mobile-bar">
+    <button
+      type="button"
+      class="dm-icon-btn"
+      aria-label="Open menu"
+      aria-controls="app-sidebar"
+      [attr.aria-expanded]="navOpen()"
+      (click)="toggleNav()"
+    >
+      <mat-icon>menu</mat-icon>
+    </button>
+    @if (activeTitle(); as title) {
+      <span class="bar-title">{{ title }}</span>
+    } @else {
+      <app-logo tone="dark" />
+    }
+    <a class="dm-icon-btn" routerLink="/chat" aria-label="New chat">
+      <mat-icon>add</mat-icon>
+    </a>
+  </header>
+
+  <aside class="sidebar" id="app-sidebar">
+    <a class="brand" routerLink="/chat" aria-label="DocuMind home">
+      <app-logo tone="dark" />
+    </a>
+
+    <a class="dm-btn dm-btn--primary dm-btn--block" routerLink="/chat">
+      <mat-icon aria-hidden="true">add</mat-icon>
+      New chat
+    </a>
+
+    <nav class="nav" aria-label="Main">
+      <a
+        [routerLink]="chatsLink()"
+        [class.active]="onChatPage()"
+        [attr.aria-current]="onChatPage() ? 'page' : null"
+      >
+        <mat-icon aria-hidden="true">chat_bubble</mat-icon>
+        Chats
+      </a>
+      <a routerLink="/library" routerLinkActive="active" ariaCurrentWhenActive="page">
+        <mat-icon aria-hidden="true">menu_book</mat-icon>
+        Library
+        @if (documentCount() !== null) {
+          <span class="count" [attr.aria-label]="documentCount() + ' documents'">{{
+            documentCount()
+          }}</span>
+        }
+      </a>
+    </nav>
+
+    <!-- Conversations, grouped by Today / This week / Earlier -->
+    <section class="conversations" aria-label="Your chats">
+      @for (group of conversations.groups(); track group.label) {
+        <h2 class="group-label">{{ group.label }}</h2>
+        <ul class="conv-list">
+          @for (conversation of group.conversations; track conversation.id) {
+            <li class="conv" [class.active]="conversation.id === conversations.activeId()">
+              <a
+                class="conv-link"
+                [routerLink]="['/chat', conversation.id]"
+                [attr.aria-current]="conversation.id === conversations.activeId() ? 'page' : null"
+              >
+                {{ displayTitle(conversation) }}
+              </a>
+              <button
+                type="button"
+                class="dm-icon-btn conv-more"
+                [attr.aria-label]="'Options for ' + displayTitle(conversation)"
+                [matMenuTriggerFor]="conversationMenu"
+                [matMenuTriggerData]="{ conversation }"
+              >
+                <mat-icon>more_horiz</mat-icon>
+              </button>
+            </li>
+          }
+        </ul>
+      } @empty {
+        @if (conversations.status() === 'loaded') {
+          <p class="conv-empty">Your chats will appear here.</p>
+        }
+      }
+    </section>
+
+    @if (auth.user(); as user) {
+      <section class="quota" aria-label="Questions today">
+        <div class="quota-row">
+          <span class="quota-title">Questions today</span>
+          <span class="dm-mono dm-muted">{{ questionsUsed() }} / {{ user.dailyLimit }}</span>
+        </div>
+        <div
+          class="quota-bar"
+          role="progressbar"
+          aria-label="Questions used today"
+          [attr.aria-valuenow]="questionsUsed()"
+          aria-valuemin="0"
+          [attr.aria-valuemax]="user.dailyLimit"
+        >
+          <span [style.width.%]="quotaPercent()"></span>
+        </div>
+        <p class="quota-note">Resets at midnight</p>
+
+        <div class="user">
+          <span class="avatar" aria-hidden="true">{{ initials() }}</span>
+          <div class="user-text">
+            <span class="user-name">{{ displayName() }}</span>
+            @if (user.fullName) {
+              <span class="user-email">{{ user.email }}</span>
+            }
+          </div>
+          <button
+            type="button"
+            class="dm-icon-btn"
+            aria-label="Account menu"
+            [matMenuTriggerFor]="accountMenu"
+          >
+            <mat-icon>more_horiz</mat-icon>
+          </button>
+        </div>
+      </section>
+    }
+  </aside>
+
+  <!-- Phones: tapping outside the open sidebar closes it -->
+  <div class="scrim" (click)="navOpen.set(false)" aria-hidden="true"></div>
+
+  <main class="main">
+    <router-outlet />
+  </main>
+</div>
+
+<mat-menu #conversationMenu="matMenu">
+  <ng-template matMenuContent let-conversation="conversation">
+    <button mat-menu-item type="button" (click)="actions.rename(conversation)">
+      <mat-icon>edit</mat-icon>
+      <span>Rename</span>
+    </button>
+    <button mat-menu-item type="button" (click)="actions.delete(conversation)">
+      <mat-icon>delete</mat-icon>
+      <span>Delete</span>
+    </button>
+  </ng-template>
+</mat-menu>
+
+<mat-menu #accountMenu="matMenu" xPosition="before" yPosition="above">
+  @if (auth.isAdmin()) {
+    <a mat-menu-item routerLink="/admin">
+      <mat-icon>insights</mat-icon>
+      <span>Admin</span>
+    </a>
+  }
+  <button mat-menu-item type="button" (click)="signOut()">
+    <mat-icon>logout</mat-icon>
+    <span>Sign out</span>
+  </button>
+</mat-menu>

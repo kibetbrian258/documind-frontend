@@ -1,1 +1,386 @@
-/* You can add global styles to this file, and also import other style files */
+/*
+ * DocuMind design system, taken from the UI mockups.
+ * Colours, fonts and the small building blocks every page uses (buttons,
+ * inputs, alerts, status pills). Components add their own layout on top.
+ */
+
+/* ------------------------------------------------------------------ tokens */
+
+:root {
+  /* Brand */
+  --dm-navy: #1c1e3e;
+  --dm-navy-hover: #2b2e57;
+  --dm-yellow: #ffd84d;
+  --dm-yellow-soft: #fff6d1;
+
+  /* Surfaces */
+  --dm-bg: #f5f4ef;
+  --dm-surface: #ffffff;
+  --dm-surface-muted: #eeede7;
+  --dm-border: #e4e2da;
+  --dm-border-strong: #cfccc1;
+
+  /* Text */
+  --dm-text: #1c1e3e;
+  --dm-text-muted: #5b5e72;
+  --dm-text-subtle: #8a8c9b;
+  --dm-link: #2f55d4;
+
+  /* Feedback */
+  --dm-danger: #b4441a;
+  --dm-danger-bg: #fce9e1;
+  --dm-danger-text: #8a2e0e;
+  --dm-success: #2e7d4f;
+  --dm-success-bg: #e5f3ea;
+  --dm-info: #3049b5;
+  --dm-info-bg: #e7ecfb;
+  --dm-warning-bg: #fff3cd;
+
+  /* Type */
+  --dm-font: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --dm-font-display: 'Inter Tight', 'Inter', system-ui, sans-serif;
+  --dm-font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
+
+  /* Shape */
+  --dm-radius-sm: 6px;
+  --dm-radius: 10px;
+  --dm-radius-lg: 14px;
+  --dm-shadow: 0 1px 2px rgb(28 30 62 / 6%), 0 8px 24px rgb(28 30 62 / 6%);
+}
+
+/* Angular Material components (menus, dialogs, tooltips) take their colours
+   from these variables, so they match the design too. */
+html {
+  --mat-sys-primary: var(--dm-navy);
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-surface: var(--dm-surface);
+  --mat-sys-surface-container: var(--dm-surface);
+  --mat-sys-on-surface: var(--dm-text);
+  --mat-sys-on-surface-variant: var(--dm-text-muted);
+  --mat-sys-outline-variant: var(--dm-border);
+
+  /* Dialogs: rounded like the cards, headings in the display font */
+  --mat-dialog-container-shape: var(--dm-radius-lg);
+  --mat-dialog-subhead-font: var(--dm-font-display);
+  --mat-dialog-subhead-weight: 700;
+  --mat-dialog-supporting-text-font: var(--dm-font);
+}
+
+/* ------------------------------------------------------------------ base */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--dm-bg);
+  color: var(--dm-text);
+  font: 400 15px/1.5 var(--dm-font);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: var(--dm-font-display);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--dm-link);
+}
+
+:focus-visible {
+  outline: 2px solid var(--dm-link);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------------ helpers */
+
+/* Text that only screen readers announce. */
+.dm-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.dm-mono {
+  font-family: var(--dm-font-mono);
+  font-size: 0.9em;
+}
+
+.dm-muted {
+  color: var(--dm-text-muted);
+}
+
+/* The yellow marker under a word, as in "Get the page." */
+.dm-highlight {
+  background: linear-gradient(transparent 55%, var(--dm-yellow) 55%);
+  padding: 0 2px;
+}
+
+.dm-link {
+  color: var(--dm-link);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ------------------------------------------------------------------ buttons */
+
+.dm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid transparent;
+  border-radius: var(--dm-radius);
+  background: var(--dm-surface);
+  color: var(--dm-text);
+  font: 600 15px/1 var(--dm-font);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease;
+}
+
+.dm-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.dm-btn--primary {
+  background: var(--dm-navy);
+  color: #ffffff;
+}
+
+.dm-btn--primary:hover:not(:disabled) {
+  background: var(--dm-navy-hover);
+}
+
+.dm-btn--secondary {
+  border-color: var(--dm-navy);
+}
+
+.dm-btn--secondary:hover:not(:disabled) {
+  background: var(--dm-surface-muted);
+}
+
+.dm-btn--danger {
+  background: var(--dm-danger);
+  color: #ffffff;
+}
+
+.dm-btn--danger:hover:not(:disabled) {
+  background: var(--dm-danger-text);
+}
+
+.dm-btn--ghost {
+  background: transparent;
+}
+
+.dm-btn--ghost:hover:not(:disabled) {
+  background: var(--dm-surface-muted);
+}
+
+.dm-btn--block {
+  width: 100%;
+}
+
+.dm-btn--sm {
+  min-height: 34px;
+  padding: 0 12px;
+  font-size: 14px;
+}
+
+.dm-btn mat-icon {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+}
+
+/* Square button holding only an icon (needs an aria-label). */
+.dm-icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: var(--dm-radius-sm);
+  background: transparent;
+  color: var(--dm-text-muted);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.dm-icon-btn:hover {
+  background: var(--dm-surface-muted);
+  color: var(--dm-text);
+}
+
+/* ------------------------------------------------------------------ form fields */
+
+.dm-field {
+  display: grid;
+  gap: 6px;
+}
+
+.dm-label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.dm-label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.dm-input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--dm-border-strong);
+  border-radius: var(--dm-radius);
+  background: var(--dm-surface);
+  color: var(--dm-text);
+  font: 400 15px/1.4 var(--dm-font);
+}
+
+.dm-input::placeholder {
+  color: var(--dm-text-subtle);
+}
+
+.dm-input:focus {
+  border-color: var(--dm-navy);
+  outline: 2px solid rgb(28 30 62 / 15%);
+  outline-offset: 0;
+}
+
+.dm-input.is-invalid {
+  border-color: var(--dm-danger);
+}
+
+.dm-hint {
+  color: var(--dm-text-muted);
+  font-size: 13px;
+}
+
+.dm-field-error {
+  color: var(--dm-danger-text);
+  font-size: 13px;
+}
+
+.dm-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--dm-text-muted);
+  cursor: pointer;
+}
+
+.dm-checkbox input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--dm-navy);
+}
+
+/* ------------------------------------------------------------------ alerts */
+
+.dm-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: var(--dm-radius);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.dm-alert mat-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+}
+
+.dm-alert--error {
+  background: var(--dm-danger-bg);
+  color: var(--dm-danger-text);
+}
+
+.dm-alert--info {
+  background: var(--dm-info-bg);
+  color: var(--dm-info);
+}
+
+.dm-alert--warning {
+  background: var(--dm-warning-bg);
+  color: var(--dm-text);
+}
+
+/* ------------------------------------------------------------------ pills and badges */
+
+.dm-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dm-pill--success {
+  background: var(--dm-success-bg);
+  color: var(--dm-success);
+}
+
+.dm-pill--info {
+  background: var(--dm-info-bg);
+  color: var(--dm-info);
+}
+
+.dm-pill--danger {
+  background: var(--dm-danger-bg);
+  color: var(--dm-danger-text);
+}
+
+.dm-card {
+  background: var(--dm-surface);
+  border: 1px solid var(--dm-border);
+  border-radius: var(--dm-radius-lg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}

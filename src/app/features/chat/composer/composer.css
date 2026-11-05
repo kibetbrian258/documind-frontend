@@ -1,0 +1,176 @@
+:host {
+  display: block;
+}
+
+.composer {
+  display: grid;
+  gap: 10px;
+  padding: 14px 14px 12px 16px;
+  border: 1px solid var(--dm-navy);
+  border-radius: var(--dm-radius-lg);
+  background: var(--dm-surface);
+}
+
+.composer:focus-within {
+  box-shadow: 0 0 0 3px rgb(28 30 62 / 10%);
+}
+
+.composer--home {
+  padding: 16px 12px 10px 16px;
+  box-shadow: var(--dm-shadow);
+}
+
+.composer.is-blocked {
+  border-color: var(--dm-border);
+  background: var(--dm-bg);
+  box-shadow: none;
+}
+
+textarea {
+  width: 100%;
+  min-height: 24px;
+  max-height: 220px;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  resize: none;
+  background: transparent;
+  color: var(--dm-text);
+  font: 400 15px/1.5 var(--dm-font);
+}
+
+.composer--home textarea {
+  min-height: 52px;
+  font-size: 16px;
+}
+
+textarea::placeholder {
+  color: var(--dm-text-subtle);
+}
+
+textarea:disabled {
+  cursor: not-allowed;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spacer {
+  flex: 1;
+}
+
+/* ------------------------------------------------------------ "Searching 3 of 9 ready documents" */
+
+.scope {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--dm-border);
+  border-radius: 999px;
+  background: var(--dm-bg);
+  color: var(--dm-text);
+  font: 500 13px/1 var(--dm-font);
+  cursor: pointer;
+}
+
+.scope:hover:not(:disabled) {
+  border-color: var(--dm-border-strong);
+}
+
+.scope--home {
+  border-color: var(--dm-navy);
+  background: var(--dm-yellow-soft);
+  font-weight: 600;
+}
+
+.scope--warning {
+  border-color: var(--dm-danger);
+  background: var(--dm-danger-bg);
+  color: var(--dm-danger-text);
+}
+
+.scope:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.scope mat-icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+.scope-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.counter {
+  color: var(--dm-text-muted);
+  font-size: 12px;
+}
+
+.counter--over {
+  color: var(--dm-danger-text);
+}
+
+/* ------------------------------------------------------------ Stop and Send */
+
+.stop {
+  min-height: 34px;
+  border-color: var(--dm-border-strong);
+}
+
+.stop-square {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  background: var(--dm-navy);
+}
+
+.send {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: var(--dm-radius-sm);
+  background: var(--dm-navy);
+  color: var(--dm-yellow);
+  cursor: pointer;
+}
+
+.send:hover:not(:disabled) {
+  background: var(--dm-navy-hover);
+}
+
+.send:disabled {
+  background: var(--dm-surface-muted);
+  color: var(--dm-text-subtle);
+  cursor: not-allowed;
+}
+
+.send mat-icon {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+}
+
+@media (max-width: 600px) {
+  .scope {
+    max-width: 62vw;
+  }
+
+  .stop {
+    padding: 0 10px;
+  }
+}

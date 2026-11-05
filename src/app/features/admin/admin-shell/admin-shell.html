@@ -1,0 +1,40 @@
+<div class="admin">
+  <aside class="sidebar">
+    <a class="brand" routerLink="/admin" aria-label="DocuMind admin">
+      <app-logo tone="light" />
+      <span class="badge">Admin</span>
+    </a>
+
+    <nav class="nav" aria-label="Admin">
+      <a routerLink="/admin/usage" routerLinkActive="active" ariaCurrentWhenActive="page">
+        <mat-icon aria-hidden="true">bar_chart</mat-icon>
+        <span>Usage &amp; cost</span>
+      </a>
+      <a routerLink="/admin/evals" routerLinkActive="active" ariaCurrentWhenActive="page">
+        <mat-icon aria-hidden="true">fact_check</mat-icon>
+        <span>Evals</span>
+      </a>
+      <a routerLink="/admin/users" routerLinkActive="active" ariaCurrentWhenActive="page">
+        <mat-icon aria-hidden="true">group</mat-icon>
+        <span>Users</span>
+      </a>
+    </nav>
+
+    <a class="back" [routerLink]="backUrl()">
+      <mat-icon aria-hidden="true">chevron_left</mat-icon>
+      <span>Back to the app</span>
+    </a>
+
+    <div class="me">
+      <span class="avatar" aria-hidden="true">{{ initials() }}</span>
+      <div class="me-text">
+        <span class="me-name">{{ name() }}</span>
+        <span class="me-role">Admin</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <router-outlet />
+  </main>
+</div>

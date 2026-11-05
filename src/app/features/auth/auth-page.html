@@ -1,0 +1,226 @@
+<div class="auth">
+  <!-- Left: what DocuMind is -->
+  <aside class="hero">
+    <app-logo tone="light" />
+
+    <div class="hero-copy">
+      <h1 class="hero-title">Ask your notes.<br />Get <span class="mark">the page</span>.</h1>
+      <p class="hero-text">
+        Upload lecture notes, contracts or manuals and ask in plain language. Every answer shows
+        exactly where it came from.
+      </p>
+    </div>
+
+    <div class="illustration" aria-hidden="true">
+      <div class="sheet sheet--back"></div>
+      <div class="sheet">
+        <span class="line line--title"></span>
+        <span class="line"></span>
+        <span class="line line--short"></span>
+        <span class="line line--highlight"></span>
+        <span class="line line--highlight line--short"></span>
+        <span class="line"></span>
+        <span class="line line--short"></span>
+      </div>
+      <span class="tag">Week 4 notes · p.14</span>
+    </div>
+
+    <ul class="points">
+      <li><mat-icon aria-hidden="true">check</mat-icon>Every answer cites its page</li>
+      <li><mat-icon aria-hidden="true">check</mat-icon>Says “not found” instead of guessing</li>
+      <li><mat-icon aria-hidden="true">check</mat-icon>Your files are visible only to you</li>
+    </ul>
+  </aside>
+
+  <!-- Right: the form -->
+  <main class="panel">
+    <div class="panel-inner">
+      <nav class="tabs" aria-label="Account">
+        <a
+          routerLink="/login"
+          [class.active]="mode() === 'signin'"
+          [attr.aria-current]="mode() === 'signin' ? 'page' : null"
+        >
+          Sign in
+        </a>
+        <a
+          routerLink="/register"
+          [class.active]="mode() === 'register'"
+          [attr.aria-current]="mode() === 'register' ? 'page' : null"
+        >
+          Create account
+        </a>
+      </nav>
+
+      @if (mode() === 'signin') {
+        <h2 class="heading">Welcome back</h2>
+        <p class="subheading">Sign in to pick up where you left off.</p>
+      } @else {
+        <h2 class="heading">Create your account</h2>
+        <p class="subheading">Upload your first document and ask away. It's free.</p>
+      }
+
+      <!-- Announced by screen readers as soon as it appears -->
+      <div aria-live="polite">
+        @if (serverError(); as message) {
+          <div class="dm-alert dm-alert--error">
+            <mat-icon aria-hidden="true">error</mat-icon>
+            <span>{{ message }}</span>
+          </div>
+        } @else if (expired() && mode() === 'signin') {
+          <div class="dm-alert dm-alert--info">
+            <mat-icon aria-hidden="true">schedule</mat-icon>
+            <span>Your session ended. Sign in again to continue.</span>
+          </div>
+        }
+      </div>
+
+      @if (mode() === 'signin') {
+        <form class="form" novalidate (submit)="signIn($event)">
+          <div class="dm-field">
+            <label class="dm-label" for="signin-email">Email</label>
+            <input
+              id="signin-email"
+              class="dm-input"
+              type="email"
+              autocomplete="email"
+              [formField]="signInForm.email"
+              [class.is-invalid]="signInForm.email().touched() && signInForm.email().invalid()"
+              [attr.aria-invalid]="signInForm.email().touched() && signInForm.email().invalid()"
+              aria-describedby="signin-email-error"
+            />
+            @if (signInForm.email().touched() && signInForm.email().invalid()) {
+              <p class="dm-field-error" id="signin-email-error">
+                {{ signInForm.email().errors()[0].message }}
+              </p>
+            }
+          </div>
+
+          <div class="dm-field">
+            <div class="dm-label-row">
+              <label class="dm-label" for="signin-password">Password</label>
+              <!-- "Forgot password?" is hidden until password reset exists (not in v1). -->
+            </div>
+            <input
+              id="signin-password"
+              class="dm-input"
+              type="password"
+              autocomplete="current-password"
+              [formField]="signInForm.password"
+              [class.is-invalid]="
+                signInForm.password().touched() && signInForm.password().invalid()
+              "
+              [attr.aria-invalid]="
+                signInForm.password().touched() && signInForm.password().invalid()
+              "
+              aria-describedby="signin-password-error"
+            />
+            @if (signInForm.password().touched() && signInForm.password().invalid()) {
+              <p class="dm-field-error" id="signin-password-error">
+                {{ signInForm.password().errors()[0].message }}
+              </p>
+            }
+          </div>
+
+          <label class="dm-checkbox">
+            <input type="checkbox" [formField]="signInForm.rememberMe" />
+            Keep me signed in for 7 days
+          </label>
+
+          <button
+            class="dm-btn dm-btn--primary dm-btn--block"
+            type="submit"
+            [disabled]="signInForm().submitting()"
+          >
+            {{ signInForm().submitting() ? 'Signing in…' : 'Sign in' }}
+          </button>
+
+          <p class="switch">
+            New here? <a class="dm-link" routerLink="/register">Create a free account</a>
+          </p>
+        </form>
+      } @else {
+        <form class="form" novalidate (submit)="register($event)">
+          <div class="dm-field">
+            <label class="dm-label" for="register-name">Full name</label>
+            <input
+              id="register-name"
+              class="dm-input"
+              type="text"
+              autocomplete="name"
+              [formField]="registerForm.fullName"
+              [class.is-invalid]="
+                registerForm.fullName().touched() && registerForm.fullName().invalid()
+              "
+              [attr.aria-invalid]="
+                registerForm.fullName().touched() && registerForm.fullName().invalid()
+              "
+              aria-describedby="register-name-error"
+            />
+            @if (registerForm.fullName().touched() && registerForm.fullName().invalid()) {
+              <p class="dm-field-error" id="register-name-error">
+                {{ registerForm.fullName().errors()[0].message }}
+              </p>
+            }
+          </div>
+
+          <div class="dm-field">
+            <label class="dm-label" for="register-email">Email</label>
+            <input
+              id="register-email"
+              class="dm-input"
+              type="email"
+              autocomplete="email"
+              [formField]="registerForm.email"
+              [class.is-invalid]="registerForm.email().touched() && registerForm.email().invalid()"
+              [attr.aria-invalid]="registerForm.email().touched() && registerForm.email().invalid()"
+              aria-describedby="register-email-error"
+            />
+            @if (registerForm.email().touched() && registerForm.email().invalid()) {
+              <p class="dm-field-error" id="register-email-error">
+                {{ registerForm.email().errors()[0].message }}
+              </p>
+            }
+          </div>
+
+          <div class="dm-field">
+            <label class="dm-label" for="register-password">Password</label>
+            <input
+              id="register-password"
+              class="dm-input"
+              type="password"
+              autocomplete="new-password"
+              [formField]="registerForm.password"
+              [class.is-invalid]="
+                registerForm.password().touched() && registerForm.password().invalid()
+              "
+              [attr.aria-invalid]="
+                registerForm.password().touched() && registerForm.password().invalid()
+              "
+              aria-describedby="register-password-hint"
+            />
+            @if (registerForm.password().touched() && registerForm.password().invalid()) {
+              <p class="dm-field-error" id="register-password-hint">
+                {{ registerForm.password().errors()[0].message }}
+              </p>
+            } @else {
+              <p class="dm-hint" id="register-password-hint">At least 8 characters.</p>
+            }
+          </div>
+
+          <button
+            class="dm-btn dm-btn--primary dm-btn--block"
+            type="submit"
+            [disabled]="registerForm().submitting()"
+          >
+            {{ registerForm().submitting() ? 'Creating account…' : 'Create account' }}
+          </button>
+
+          <p class="switch">
+            Already have an account? <a class="dm-link" routerLink="/login">Sign in</a>
+          </p>
+        </form>
+      }
+    </div>
+  </main>
+</div>

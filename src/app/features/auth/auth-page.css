@@ -1,0 +1,216 @@
+.auth {
+  display: grid;
+  grid-template-columns: 52fr 48fr;
+  min-height: 100dvh;
+}
+
+/* ------------------------------------------------------------ left: hero */
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  padding: 40px 56px;
+  background: var(--dm-navy);
+  color: #ffffff;
+}
+
+.hero-copy {
+  margin-top: auto;
+  max-width: 480px;
+}
+
+.hero-title {
+  font-size: clamp(44px, 5vw, 64px);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+}
+
+/* A thin yellow line underneath the words, clear of the letters that dip below (g, p). */
+.mark {
+  text-decoration-line: underline;
+  text-decoration-color: var(--dm-yellow);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.24em;
+  text-decoration-skip-ink: none;
+}
+
+.hero-text {
+  margin-top: 20px;
+  color: rgb(255 255 255 / 78%);
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+/* The page with a highlighted passage and its page tag. */
+.illustration {
+  position: relative;
+  width: min(340px, 75%);
+  aspect-ratio: 4 / 3;
+}
+
+.sheet {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 28px 24px;
+  border-radius: 6px;
+  background: #ffffff;
+  box-shadow: 0 20px 40px rgb(0 0 0 / 25%);
+}
+
+.sheet--back {
+  inset: 16px -12px -16px 44px;
+  background: #2c2f57;
+  box-shadow: none;
+}
+
+.line {
+  height: 5px;
+  border-radius: 3px;
+  background: #e7e5de;
+}
+
+.line--title {
+  width: 55%;
+  height: 8px;
+  margin-bottom: 8px;
+  background: var(--dm-navy);
+}
+
+.line--short {
+  width: 70%;
+}
+
+.line--highlight {
+  height: 12px;
+  background: var(--dm-yellow);
+}
+
+.tag {
+  position: absolute;
+  right: -48px;
+  top: 52%;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: var(--dm-yellow);
+  color: var(--dm-navy);
+  font: 500 13px/1 var(--dm-font-mono);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 25%);
+}
+
+.points {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: rgb(255 255 255 / 82%);
+  font-size: 15px;
+}
+
+.points li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.points mat-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--dm-yellow);
+  font-size: 18px;
+}
+
+/* ------------------------------------------------------------ right: form */
+
+.panel {
+  display: grid;
+  place-items: center;
+  padding: 40px 24px;
+  background: var(--dm-bg);
+}
+
+.panel-inner {
+  display: grid;
+  gap: 20px;
+  width: min(420px, 100%);
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 4px;
+  border-radius: var(--dm-radius);
+  background: var(--dm-surface-muted);
+  margin-bottom: 20px;
+}
+
+.tabs a {
+  padding: 10px 0;
+  border-radius: 8px;
+  color: var(--dm-text-muted);
+  font-weight: 500;
+  text-align: center;
+  text-decoration: none;
+}
+
+.tabs a.active {
+  background: var(--dm-surface);
+  color: var(--dm-text);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgb(28 30 62 / 10%);
+}
+
+.heading {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.subheading {
+  margin-top: -12px;
+  color: var(--dm-text-muted);
+}
+
+.form {
+  display: grid;
+  gap: 20px;
+}
+
+.form .dm-btn {
+  margin-top: 8px;
+}
+
+.switch {
+  color: var(--dm-text-muted);
+  text-align: center;
+}
+
+/* ------------------------------------------------------------ narrow screens */
+
+@media (max-width: 900px) {
+  .auth {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    gap: 24px;
+    padding: 28px 24px 32px;
+  }
+
+  .hero-copy {
+    margin-top: 0;
+  }
+
+  .hero-title {
+    font-size: 40px;
+  }
+
+  .illustration {
+    display: none;
+  }
+}

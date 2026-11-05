@@ -1,0 +1,74 @@
+<div
+  #card
+  class="composer"
+  [class.composer--home]="variant() === 'home'"
+  [class.is-blocked]="blockedReason()"
+  cdkOverlayOrigin
+  #origin="cdkOverlayOrigin"
+>
+  <label class="dm-visually-hidden" for="question-{{ variant() }}">Your question</label>
+  <textarea
+    #input
+    id="question-{{ variant() }}"
+    [rows]="variant() === 'home' ? 2 : 1"
+    [placeholder]="blockedReason() ?? placeholder()"
+    [disabled]="!!blockedReason()"
+    (input)="onInput($event)"
+    (keydown.enter)="onEnter($event)"
+  ></textarea>
+
+  <div class="bar">
+    <button
+      #chip
+      type="button"
+      class="scope"
+      [class.scope--home]="variant() === 'home'"
+      [class.scope--warning]="nothingSelected()"
+      aria-haspopup="dialog"
+      [attr.aria-expanded]="pickerOpen()"
+      [disabled]="!!blockedReason()"
+      (click)="togglePicker()"
+    >
+      <mat-icon aria-hidden="true">filter_list</mat-icon>
+      <span class="scope-text">{{ scopeText() }}</span>
+      <mat-icon aria-hidden="true">{{ pickerOpen() ? 'expand_less' : 'expand_more' }}</mat-icon>
+    </button>
+
+    <span class="spacer"></span>
+
+    @if (length() > maxLength - 200) {
+      <span class="counter dm-mono" [class.counter--over]="length() > maxLength"
+        >{{ length() }} / {{ maxLength }}</span
+      >
+    }
+
+    @if (answering()) {
+      <button type="button" class="dm-btn dm-btn--secondary dm-btn--sm stop" (click)="stop.emit()">
+        <span class="stop-square" aria-hidden="true"></span>
+        Stop
+      </button>
+    }
+
+    <button
+      type="button"
+      class="send"
+      aria-label="Send question"
+      [disabled]="!canSend()"
+      (click)="submit()"
+    >
+      <mat-icon aria-hidden="true">arrow_upward</mat-icon>
+    </button>
+  </div>
+</div>
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="origin"
+  [cdkConnectedOverlayOpen]="pickerOpen()"
+  [cdkConnectedOverlayPositions]="positions()"
+  [cdkConnectedOverlayWidth]="overlayWidth()"
+  (overlayOutsideClick)="onOutsideClick($event)"
+  (detach)="pickerOpen.set(false)"
+>
+  <app-document-picker cdkTrapFocus [cdkTrapFocusAutoCapture]="true" [(scope)]="scope" />
+</ng-template>

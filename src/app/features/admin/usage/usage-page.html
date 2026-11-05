@@ -1,0 +1,248 @@
+<section class="page">
+  <header class="page-head">
+    <h1 class="page-title">Usage &amp; cost</h1>
+    <div class="segmented" role="group" aria-label="Period">
+      @for (option of ranges; track option.value) {
+        <button
+          type="button"
+          [attr.aria-pressed]="range() === option.value"
+          (click)="range.set(option.value)"
+        >
+          {{ option.label }}
+        </button>
+      }
+    </div>
+  </header>
+
+  @if (usage.error() && !data()) {
+    <div class="card state">
+      <p>The usage figures couldn't be loaded.</p>
+      <button type="button" class="dm-btn dm-btn--secondary dm-btn--sm" (click)="usage.reload()">
+        Try again
+      </button>
+    </div>
+  } @else if (kpis(); as k) {
+    <!-- ======================================================== headline numbers -->
+    <div class="kpis" [class.is-loading]="usage.isLoading()">
+      <div class="kpi">
+        <span class="kpi-label">Questions answered</span>
+        <span class="kpi-value">{{ k.questions }}</span>
+        <span class="kpi-note">{{ k.activeUsers }}</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-label">Estimated AI cost</span>
+        <span class="kpi-value">{{ k.cost }}</span>
+        <span
+          class="kpi-note"
+          [class.good]="k.costGood === true"
+          [class.bad]="k.costGood === false"
+        >
+          @if (k.costGood !== null) {
+            <mat-icon aria-hidden="true">{{ k.costGood ? 'check' : 'close' }}</mat-icon>
+          }
+          {{ k.costNote }}
+        </span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-label">Median time to first word</span>
+        <span class="kpi-value">{{ k.firstWord }}</span>
+        <span
+          class="kpi-note"
+          [class.good]="k.firstWordGood === true"
+          [class.bad]="k.firstWordGood === false"
+        >
+          @if (k.firstWordGood !== null) {
+            <mat-icon aria-hidden="true">{{ k.firstWordGood ? 'check' : 'close' }}</mat-icon>
+          }
+          Target ≤ 2 s
+        </span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-label">Answers rated helpful</span>
+        <span class="kpi-value">{{ k.satisfaction }}</span>
+        <span
+          class="kpi-note"
+          [class.good]="k.satisfactionGood === true"
+          [class.bad]="k.satisfactionGood === false"
+        >
+          @if (k.satisfactionGood !== null) {
+            <mat-icon aria-hidden="true">{{ k.satisfactionGood ? 'check' : 'close' }}</mat-icon>
+          }
+          {{ k.satisfactionNote }}
+        </span>
+      </div>
+    </div>
+
+    <div class="middle">
+      <!-- ====================================================== questions per day -->
+      <section class="card chart-card" aria-labelledby="per-day-title">
+        <div class="card-head">
+          <h2 class="card-title" id="per-day-title">Questions per day</h2>
+          <span class="card-meta">{{ chartRange() }}</span>
+        </div>
+        <div class="card-body">
+          <div class="chart" aria-hidden="true">
+            <div class="plot">
+              @for (line of gridLines(); track $index) {
+                <span class="grid-line" [style.bottom.%]="barHeight(line)">
+                  <span class="grid-value dm-mono">{{ count(line) }}</span>
+                </span>
+              }
+              <div class="bars" [class.bars--many]="bars().length > 7">
+                @for (bar of bars(); track bar.key) {
+                  <div class="bar-slot" tabindex="0">
+                    <span
+                      class="bar"
+                      [class.bar--today]="bar.isToday"
+                      [style.height.%]="barHeight(bar.questions)"
+                    >
+                      @if (bar.showValue) {
+                        <span class="bar-value dm-mono">{{ count(bar.questions) }}</span>
+                      }
+                    </span>
+                    <span class="tip" role="tooltip" [style.bottom.%]="barHeight(bar.questions)">
+                      <strong>{{ bar.longLabel }}</strong>
+                      {{ count(bar.questions) }} question{{ bar.questions === 1 ? '' : 's' }}
+                    </span>
+                  </div>
+                }
+              </div>
+            </div>
+            <div class="labels" [class.bars--many]="bars().length > 7">
+              @for (bar of bars(); track bar.key) {
+                <span class="bar-label" [class.bar-label--hidden]="!bar.showLabel">{{
+                  bar.label
+                }}</span>
+              }
+            </div>
+          </div>
+
+          <!-- The same numbers for screen readers -->
+          <table class="dm-visually-hidden">
+            <caption>
+              Questions answered per day
+            </caption>
+            <tr>
+              <th scope="col">Day</th>
+              <th scope="col">Questions</th>
+            </tr>
+            @for (bar of bars(); track bar.key) {
+              <tr>
+                <td>{{ bar.longLabel }}</td>
+                <td>{{ bar.questions }}</td>
+              </tr>
+            }
+          </table>
+          @if (data(); as d) {
+            <p class="chart-note">
+              Days run midnight to midnight, {{ d.timeZone }}. Includes eval runs.
+            </p>
+          }
+        </div>
+      </section>
+
+      <!-- ====================================================== where the money goes -->
+      @if (spend(); as s) {
+        <section class="card money-card" aria-labelledby="money-title">
+          <div class="card-head">
+            <h2 class="card-title" id="money-title">Where the money goes</h2>
+          </div>
+          <div class="card-body money-body">
+            <div class="cost-row">
+              <div class="cost-line">
+                <span>Chat model · answers</span>
+                <span class="dm-mono">{{ s.cost }}</span>
+              </div>
+              <span class="cost-bar"><span></span></span>
+              <span class="cost-detail">{{ s.tokens }}</span>
+            </div>
+
+            <div class="cost-row">
+              <span class="cost-line"><span>Documents in all libraries</span></span>
+              <span class="doc-health">
+                <span class="dm-pill dm-pill--success"
+                  >{{ count(s.documents.documentsReady) }} ready</span
+                >
+                <span class="dm-pill dm-pill--info"
+                  >{{ count(s.documents.documentsProcessing) }} processing</span
+                >
+                <span class="dm-pill dm-pill--danger"
+                  >{{ count(s.documents.documentsFailed) }} failed</span
+                >
+              </span>
+            </div>
+
+            <p class="money-note">
+              Costs use the prices in <span class="dm-mono">documind.chat.prices</span>. Local
+              Ollama models cost $0.
+            </p>
+          </div>
+        </section>
+      }
+    </div>
+
+    <!-- ======================================================== top users -->
+    <section class="card" aria-labelledby="top-users-title">
+      <div class="card-head">
+        <h2 class="card-title" id="top-users-title">{{ topUsersTitle() }}</h2>
+        <a class="dm-link all-users" routerLink="/admin/users">All users</a>
+      </div>
+      @if (topUsers().length === 0) {
+        <p class="state">Nobody asked a question in this period.</p>
+      } @else {
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">User</th>
+                <th scope="col" class="num">Questions</th>
+                <th scope="col" class="num">Input tokens</th>
+                <th scope="col" class="num">Output tokens</th>
+                <th scope="col" class="num">Est. cost</th>
+                <th scope="col">Daily limit</th>
+                <th scope="col"><span class="dm-visually-hidden">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (user of topUsers(); track user.userId) {
+                <tr>
+                  <td>
+                    <span class="person">
+                      <span class="avatar" aria-hidden="true">{{ initials(nameOf(user)) }}</span>
+                      <span>{{ user.email }}</span>
+                    </span>
+                  </td>
+                  <td class="num">{{ count(user.questions) }}</td>
+                  <td class="num">{{ count(user.inputTokens) }}</td>
+                  <td class="num">{{ count(user.outputTokens) }}</td>
+                  <td class="num">{{ money(user.cost) }}</td>
+                  <td>
+                    @if (user.hitLimit) {
+                      <span class="tag tag--warn">Hit limit {{ user.hitLimit }}</span>
+                    } @else if (limitOf(user.userId); as u) {
+                      <span class="tag" [class.tag--off]="u.dailyLimit === 0">
+                        {{ u.dailyLimit === 0 ? 'Paused' : u.dailyLimit + ' / day' }}
+                      </span>
+                    }
+                  </td>
+                  <td class="actions">
+                    <button
+                      type="button"
+                      class="dm-btn dm-btn--secondary dm-btn--sm edit"
+                      [disabled]="!limitOf(user.userId)"
+                      (click)="editLimit(user.userId)"
+                    >
+                      Edit limit
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  } @else {
+    <p class="card state" role="status">Loading usage…</p>
+  }
+</section>

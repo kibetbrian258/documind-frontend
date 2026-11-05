@@ -1,0 +1,249 @@
+.is-loading {
+  opacity: 0.6;
+  transition: opacity 150ms ease;
+}
+
+.middle {
+  display: grid;
+  grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr);
+  gap: 14px;
+}
+
+/* ------------------------------------------------------------ questions per day (bar chart) */
+
+.chart {
+  padding: 18px 0 0 30px;
+}
+
+/* The area the bars stand in; grid lines are placed by their value. */
+.plot {
+  position: relative;
+  height: 180px;
+  border-bottom: 1px solid var(--dm-border-strong);
+}
+
+.grid-line {
+  position: absolute;
+  right: 0;
+  left: 0;
+  border-top: 1px solid var(--dm-border);
+}
+
+.grid-value {
+  position: absolute;
+  top: -7px;
+  left: -30px;
+  width: 24px;
+  color: var(--dm-text-subtle);
+  font-size: 10px;
+  text-align: right;
+}
+
+.bars,
+.labels {
+  display: flex;
+  gap: 12px;
+}
+
+.bars {
+  position: relative;
+  height: 100%;
+}
+
+.bars--many {
+  gap: 3px;
+}
+
+.bar-slot {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  justify-content: center;
+  min-width: 0;
+  outline: none;
+}
+
+.bar {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 58px;
+  min-height: 2px;
+  border-radius: 4px 4px 0 0;
+  background: var(--dm-navy);
+}
+
+.bar--today {
+  background: var(--dm-yellow);
+  box-shadow: inset 0 0 0 1px #e6bd25;
+}
+
+/* The number above a bar */
+.bar-value {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-bottom: 4px;
+  color: var(--dm-text-muted);
+  font-size: 10px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.bar-label {
+  flex: 1;
+  min-width: 0;
+  padding-top: 8px;
+  overflow: visible;
+  color: var(--dm-text-muted);
+  font-size: 11px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.bar-label--hidden {
+  visibility: hidden;
+}
+
+/* Hover / keyboard focus: "Thu, Oct 30 · 176 questions" */
+.tip {
+  position: absolute;
+  left: 50%;
+  z-index: 2;
+  display: none;
+  padding: 6px 9px;
+  border-radius: 6px;
+  background: var(--dm-navy);
+  color: #ffffff;
+  font-size: 12px;
+  white-space: nowrap;
+  transform: translate(-50%, -22px); /* just above the bar and its number */
+  pointer-events: none;
+}
+
+.tip strong {
+  display: block;
+  font-weight: 600;
+}
+
+.bar-slot:hover .tip,
+.bar-slot:focus-visible .tip {
+  display: block;
+}
+
+.bar-slot:hover .bar:not(.bar--today),
+.bar-slot:focus-visible .bar:not(.bar--today) {
+  background: var(--dm-navy-hover);
+}
+
+.bar-slot:focus-visible .bar {
+  outline: 2px solid var(--dm-link);
+  outline-offset: 2px;
+}
+
+.chart-note {
+  margin-top: 10px;
+  color: var(--dm-text-subtle);
+  font-size: 11px;
+}
+
+/* ------------------------------------------------------------ where the money goes */
+
+.money-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.money-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.cost-row {
+  display: grid;
+  gap: 8px;
+}
+
+.cost-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cost-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--dm-surface-muted);
+  overflow: hidden;
+}
+
+.cost-bar span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--dm-navy);
+}
+
+.cost-detail {
+  color: var(--dm-text-muted);
+  font-size: 12px;
+}
+
+.doc-health {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.doc-health .dm-pill {
+  font-size: 12px;
+}
+
+.money-note {
+  margin-top: auto;
+  padding: 10px 12px;
+  border-radius: var(--dm-radius-sm);
+  background: var(--dm-bg);
+  color: var(--dm-text-muted);
+  font-size: 12px;
+}
+
+/* ------------------------------------------------------------ top users */
+
+.all-users {
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.actions {
+  text-align: right;
+}
+
+.edit {
+  min-height: 30px;
+  border-color: var(--dm-border-strong);
+  font-size: 12px;
+}
+
+@media (max-width: 1100px) {
+  .middle {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .bars,
+  .labels {
+    gap: 6px;
+  }
+
+  .bars--many .bar-value {
+    display: none;
+  }
+}

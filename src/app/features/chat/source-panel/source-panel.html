@@ -1,0 +1,108 @@
+@let c = citation();
+
+<!-- Phones: tapping the dimmed chat closes the sheet -->
+<div class="scrim" aria-hidden="true" (click)="close.emit()"></div>
+
+<section class="panel" role="region" [attr.aria-label]="'Source ' + c.number + ': ' + c.fileName">
+  <span class="grabber" aria-hidden="true"></span>
+
+  <header class="head">
+    <mat-icon class="doc-icon wide-only" aria-hidden="true">description</mat-icon>
+    <span class="badge narrow-only" aria-hidden="true">{{ c.number }}</span>
+
+    <div class="head-text">
+      <p class="file" [title]="c.fileName">{{ c.fileName }}</p>
+      <p class="meta wide-only">
+        Source {{ index() + 1 }} of {{ total() }}
+        @if (pageText(); as page) {
+          · {{ page }}
+        }
+      </p>
+      <p class="meta narrow-only">
+        @if (pageLabel(); as page) {
+          {{ page }} ·
+        }
+        {{ match() }}
+      </p>
+    </div>
+
+    @if (total() > 1) {
+      <button
+        type="button"
+        class="dm-icon-btn wide-only"
+        aria-label="Previous source"
+        matTooltip="Previous source"
+        (click)="previous()"
+      >
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button
+        type="button"
+        class="dm-icon-btn wide-only"
+        aria-label="Next source"
+        matTooltip="Next source"
+        (click)="next()"
+      >
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    }
+    <button
+      type="button"
+      class="dm-icon-btn"
+      aria-label="Close source"
+      matTooltip="Close"
+      (click)="close.emit()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+
+  <div class="body">
+    <!-- A stylised page: grey lines stand for the text around the passage -->
+    <div class="page">
+      <div class="page-top dm-mono">
+        <span class="running-title">{{ title() }}</span>
+        @if (c.page) {
+          <span>{{ c.page }}</span>
+        }
+      </div>
+      <div class="lines" aria-hidden="true"><span></span><span></span><span></span></div>
+      <p class="passage">
+        <mark>{{ c.snippet }}</mark>
+      </p>
+      <div class="lines" aria-hidden="true"><span></span><span></span><span></span></div>
+    </div>
+
+    <div class="note wide-only">
+      <span class="match dm-mono">{{ match() }}</span>
+      <p>Highlighted text is the exact passage the answer used.</p>
+    </div>
+
+    @if (canOpen()) {
+      <a class="open wide-only" [href]="fileUrl()" target="_blank" rel="noopener">
+        Open full document
+        <mat-icon aria-hidden="true">open_in_new</mat-icon>
+      </a>
+    } @else {
+      <p class="gone wide-only">This document has been deleted from your Library.</p>
+    }
+  </div>
+
+  <footer class="foot narrow-only">
+    <button
+      type="button"
+      class="dm-btn dm-btn--secondary"
+      [disabled]="total() < 2"
+      (click)="next()"
+    >
+      Next source
+    </button>
+    @if (canOpen()) {
+      <a class="dm-btn dm-btn--primary" [href]="fileUrl()" target="_blank" rel="noopener">{{
+        openLabel()
+      }}</a>
+    } @else {
+      <button type="button" class="dm-btn dm-btn--primary" disabled>Deleted</button>
+    }
+  </footer>
+</section>

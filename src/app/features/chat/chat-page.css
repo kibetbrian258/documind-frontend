@@ -1,0 +1,213 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.chat {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+}
+
+.chat.with-panel {
+  grid-template-columns: minmax(0, 1fr) 340px;
+}
+
+/* ------------------------------------------------------------ new chat */
+
+.home-scroll {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.home {
+  display: grid;
+  gap: 24px;
+  max-width: 616px;
+  margin: 0 auto;
+  padding: 72px 24px 48px;
+}
+
+.home-title {
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+}
+
+.try {
+  display: grid;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.try-title {
+  color: var(--dm-text-muted);
+  font: 600 12px/1 var(--dm-font);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.suggestion {
+  padding: 9px 14px;
+  border: 1px solid var(--dm-border);
+  border-radius: 999px;
+  background: var(--dm-bg);
+  color: var(--dm-text);
+  font: 400 14px/1.35 var(--dm-font);
+  text-align: left;
+  cursor: pointer;
+}
+
+.suggestion:hover {
+  border-color: var(--dm-border-strong);
+  background: var(--dm-surface-muted);
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+}
+
+.empty mat-icon {
+  flex-shrink: 0;
+  color: var(--dm-text-subtle);
+}
+
+.empty > div {
+  flex: 1;
+}
+
+.empty-title {
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------ a conversation */
+
+.column {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+}
+
+.thread-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 20px 14px 24px;
+  border-bottom: 1px solid var(--dm-border);
+}
+
+.thread-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 19px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.messages {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.messages-inner {
+  display: grid;
+  gap: 22px;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 24px 28px;
+}
+
+.question {
+  justify-self: end;
+  max-width: 85%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--dm-navy);
+  color: #ffffff;
+  font-size: 15px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.state {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 48px 0;
+  text-align: center;
+}
+
+.state-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.dock {
+  width: 100%;
+  max-width: 808px;
+  margin: 0 auto;
+  padding: 0 24px 10px;
+}
+
+.footnote {
+  margin-top: 8px;
+  color: var(--dm-text-muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+.source-panel {
+  min-height: 0;
+}
+
+/* ------------------------------------------------------------ phones and small tablets */
+
+@media (max-width: 900px) {
+  /* The panel becomes a bottom sheet over the chat (see source-panel.css). */
+  .chat.with-panel {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home {
+    gap: 20px;
+    padding: 32px 16px 32px;
+  }
+
+  .home-title {
+    font-size: 30px;
+  }
+
+  /* The app's top bar already shows the chat's name on phones. */
+  .thread-head {
+    display: none;
+  }
+
+  .messages-inner {
+    gap: 18px;
+    padding: 16px 16px 20px;
+  }
+
+  .dock {
+    padding: 0 12px 8px;
+  }
+
+  .footnote {
+    display: none;
+  }
+}

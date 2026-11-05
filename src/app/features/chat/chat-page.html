@@ -1,0 +1,154 @@
+<div class="chat" [class.with-panel]="selectedIndex() >= 0">
+  @if (!id()) {
+    <!-- ======================================================== new chat -->
+    <div class="home-scroll">
+      <section class="home">
+        <h1 class="home-title">
+          What do you want to<br />
+          find in your <span class="dm-highlight">documents</span>?
+        </h1>
+
+        <app-composer
+          variant="home"
+          placeholder="e.g. What's the difference between price and income elasticity?"
+          [blockedReason]="blockedReason()"
+          [busy]="creating()"
+          [(text)]="draft"
+          [scope]="scope()"
+          (scopeChange)="setScope($event)"
+          (send)="sendFromHome($event)"
+        />
+
+        @if (limitReached() && user(); as u) {
+          <app-daily-limit [limit]="u.dailyLimit" [resetsAt]="u.questionsResetAt" />
+        } @else if (libraryEmpty()) {
+          <div class="empty dm-card">
+            <mat-icon aria-hidden="true">menu_book</mat-icon>
+            <div>
+              <p class="empty-title">Start by adding a document</p>
+              <p class="dm-muted">
+                Upload lecture notes, a contract or a manual, then ask about it here.
+              </p>
+            </div>
+            <a class="dm-btn dm-btn--primary dm-btn--sm" routerLink="/library">Go to Library</a>
+          </div>
+        } @else if (suggestions().length > 0) {
+          <div class="try">
+            <h2 class="try-title">Try asking</h2>
+            <div class="suggestions">
+              @for (suggestion of suggestions(); track suggestion) {
+                <button type="button" class="suggestion" (click)="useSuggestion(suggestion)">
+                  {{ suggestion }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </section>
+    </div>
+  } @else {
+    <!-- ======================================================== a conversation -->
+    <section class="column" aria-labelledby="thread-title">
+      <header class="thread-head">
+        <h1 class="thread-title" id="thread-title" [title]="title()">{{ title() }}</h1>
+        <button
+          type="button"
+          class="dm-icon-btn"
+          aria-label="Rename chat"
+          matTooltip="Rename"
+          (click)="rename()"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button
+          type="button"
+          class="dm-icon-btn"
+          aria-label="Delete chat"
+          matTooltip="Delete"
+          (click)="delete()"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </header>
+
+      <div class="messages" #scroller (scroll)="onScroll()">
+        <div class="messages-inner">
+          @switch (thread()?.status) {
+            @case ('error') {
+              <div class="state">
+                <p>This chat couldn't be loaded. It may have been deleted.</p>
+                <div class="state-actions">
+                  <button
+                    type="button"
+                    class="dm-btn dm-btn--secondary dm-btn--sm"
+                    (click)="reload()"
+                  >
+                    Try again
+                  </button>
+                  <a class="dm-btn dm-btn--ghost dm-btn--sm" routerLink="/chat">Start a new chat</a>
+                </div>
+              </div>
+            }
+            @case ('ready') {
+              @for (item of items(); track item.key) {
+                @if (item.kind === 'question') {
+                  <p class="question">{{ item.text }}</p>
+                } @else {
+                  <app-answer-view
+                    [answer]="item"
+                    [activeSource]="activeSourceFor(item)"
+                    [readyCount]="readyCount()"
+                    (openSource)="openSource(item, $event)"
+                    (retry)="retry(item)"
+                    (searchAll)="searchAll(item)"
+                    (rate)="rate(item, $event)"
+                  />
+                }
+              } @empty {
+                <p class="state dm-muted">Ask your first question below.</p>
+              }
+            }
+            @default {
+              <p class="state dm-muted" role="status">Loading this chat…</p>
+            }
+          }
+
+          @if (limitReached() && !answering() && user(); as u) {
+            <app-daily-limit [limit]="u.dailyLimit" [resetsAt]="u.questionsResetAt" />
+          }
+        </div>
+      </div>
+
+      <div class="dock">
+        <app-composer
+          variant="thread"
+          placeholder="Ask a follow-up…"
+          [blockedReason]="blockedReason()"
+          [answering]="answering()"
+          [(text)]="draft"
+          [scope]="scope()"
+          (scopeChange)="setScope($event)"
+          (send)="send($event)"
+          (stop)="stop()"
+        />
+        <p class="footnote">
+          Answers come only from your documents. If it isn't there, DocuMind will say so.
+        </p>
+      </div>
+
+      <p class="dm-visually-hidden" aria-live="polite">{{ liveStatus() }}</p>
+    </section>
+
+    @if (selectedAnswer(); as answer) {
+      @if (selectedIndex() >= 0) {
+        <app-source-panel
+          class="source-panel"
+          [citations]="answer.citations"
+          [index]="selectedIndex()"
+          (indexChange)="showSourceAt($event)"
+          (close)="selected.set(null)"
+        />
+      }
+    }
+  }
+</div>

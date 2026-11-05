@@ -1,0 +1,32 @@
+<div class="picker" role="group" aria-labelledby="picker-title">
+  <div class="picker-head">
+    <span class="picker-title" id="picker-title">Only search these documents</span>
+    <button type="button" class="text-btn" (click)="selectAll()">Select all</button>
+    <button type="button" class="text-btn" (click)="clear()">Clear</button>
+  </div>
+
+  <ul class="picker-list">
+    @for (doc of documents(); track doc.id) {
+      <li>
+        <label
+          class="row"
+          [class.checked]="isChecked(doc)"
+          [class.unavailable]="doc.status !== 'READY'"
+        >
+          <input
+            type="checkbox"
+            [checked]="isChecked(doc)"
+            [disabled]="doc.status !== 'READY'"
+            (change)="toggle(doc)"
+          />
+          <span class="name">{{ doc.fileName }}</span>
+          <span class="detail" [class.detail--note]="doc.status !== 'READY'">{{
+            detail(doc)
+          }}</span>
+        </label>
+      </li>
+    } @empty {
+      <li class="empty">Your Library is empty.</li>
+    }
+  </ul>
+</div>
